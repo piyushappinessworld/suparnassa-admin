@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://suparnassa-admin-backend.onrender.com/api',
+  baseURL: 'https://suparnassa-admin.onrender.com/api',
   headers: {
     'Content-Type': 'application/json',
   },
