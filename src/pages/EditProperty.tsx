@@ -24,7 +24,7 @@ const EditProperty = () => {
   });
 
   useEffect(() => {
-    const property = properties.find((p: Property) => p.id === Number(id));
+    const property = properties.find((p: Property) => p._id === id);
     if (property) {
       setFormData({
         name: property.name,
@@ -42,23 +42,33 @@ const EditProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
+      // Create a new FormData instance
       const data = new FormData();
-      data.append('name', formData.name);
-      data.append('location', formData.location);
-      data.append('type', formData.type);
-      data.append('details', formData.details);
-      
+
+      // Append text fields to the FormData
+      data.append("name", formData.name);
+      data.append("location", formData.location);
+      data.append("type", formData.type);
+      data.append("details", formData.details);
+
+      // Append existing images
       formData.existingImages.forEach((image) => {
-        data.append('existingImages', image);
-      });
-      
-      formData.images.forEach((image) => {
-        data.append('images', image);
+        data.append("existingImages", image);
       });
 
-      await dispatch(updateProperty({ id: Number(id), formData })).unwrap();
+      // Append new image files
+      formData.images.forEach((image) => {
+        data.append("images", image);
+      });
+
+      // Dispatch the updateProperty action with the FormData instance
+      await dispatch(
+        updateProperty({ id, formData: data })
+      ).unwrap();
+
+      // Navigate back to the properties list
       navigate("/properties");
     } catch (error) {
       toast.error("Failed to update property");

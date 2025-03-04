@@ -46,7 +46,7 @@ export const createProperty = createAsyncThunk(
 
 export const updateProperty = createAsyncThunk(
   'properties/update',
-  async ({ id, formData }: { id: number; formData: FormData }, { rejectWithValue }) => {
+  async ({ id, formData }: { id: string; formData: FormData }, { rejectWithValue }) => {
     try {
       const response = await api.put(`/properties/${id}`, formData, {
         headers: {
@@ -62,7 +62,7 @@ export const updateProperty = createAsyncThunk(
 
 export const deleteProperty = createAsyncThunk(
   'properties/delete',
-  async (id: number, { rejectWithValue }) => {
+  async (id: string, { rejectWithValue }) => {
     try {
       await api.delete(`/properties/${id}`);
       return id;

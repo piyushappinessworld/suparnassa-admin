@@ -12,7 +12,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   const navItems = [
-    { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/properties", icon: Building, label: "Properties" },
     { path: "/add-property", icon: PlusCircle, label: "Add Property" },
   ];

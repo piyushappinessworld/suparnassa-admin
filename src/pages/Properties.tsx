@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 // Define property type for better type safety
 export interface Property {
-  id: number;
+  id: any;
   name: string;
   location: string;
   type: string;
@@ -31,7 +31,7 @@ const Properties = () => {
     dispatch(fetchProperties());
   }, [dispatch]);
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     try {
       await dispatch(deleteProperty(id)).unwrap();
     } catch (error) {
@@ -39,7 +39,8 @@ const Properties = () => {
     }
   };
 
-  const handleEdit = (id: number) => {
+  const handleEdit = (id: any) => {
+    console.log(id)
     navigate(`/edit-property/${id}`);
   };
 
@@ -119,13 +120,13 @@ const Properties = () => {
               )}
               <div className="absolute bottom-2 right-2 flex gap-2 z-10">
                 <button
-                  onClick={() => handleEdit(property.id)}
+                  onClick={() => handleEdit(property._id)}
                   className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors"
                 >
                   <Edit className="h-4 w-4 text-gray-600" />
                 </button>
                 <button
-                  onClick={() => handleDelete(property.id)}
+                  onClick={() => handleDelete(property._id)}
                   className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors"
                 >
                   <Trash2 className="h-4 w-4 text-red-500" />
