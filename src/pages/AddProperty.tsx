@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload, X } from "lucide-react";
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/store';
-import { createProperty } from '@/store/properties/propertySlice';
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/store";
+import { createProperty } from "@/store/properties/propertySlice";
 import { toast } from "sonner";
 import type { Property } from "./Properties";
 
@@ -21,15 +21,15 @@ const AddProperty = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const data = new FormData();
-      data.append('name', formData.name);
-      data.append('location', formData.location);
-      data.append('type', formData.type);
-      data.append('details', formData.details);
+      data.append("name", formData.name);
+      data.append("location", formData.location);
+      data.append("type", formData.type);
+      data.append("details", formData.details);
       formData.images.forEach((image) => {
-        data.append('images', image);
+        data.append("images", image);
       });
 
       await dispatch(createProperty(data)).unwrap();
@@ -42,16 +42,16 @@ const AddProperty = () => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         images: [...prev.images, ...files],
       }));
 
       // Generate previews
-      files.forEach(file => {
+      files.forEach((file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-          setPreviews(prev => [...prev, e.target?.result as string]);
+          setPreviews((prev) => [...prev, e.target?.result as string]);
         };
         reader.readAsDataURL(file);
       });
@@ -59,16 +59,18 @@ const AddProperty = () => {
   };
 
   const removeImage = (index: number) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }));
-    setPreviews(prev => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
     <div className="animate-fadeIn max-w-2xl mx-auto">
-      <h1 className="text-2xl font-semibold text-gray-900 mb-6">Add Property</h1>
+      <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+        Add Property
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="bg-white p-6 rounded-xl border border-gray-200">
           <div className="space-y-4">
@@ -117,7 +119,8 @@ const AddProperty = () => {
                 <option value="">Select type</option>
                 <option value="Residential">Residential</option>
                 <option value="Commercial">Commercial</option>
-                <option value="Industrial">Industrial</option>
+                <option value="Ofiice">Office</option>
+                <option value="Hospitality">Hospitality</option>
               </select>
             </div>
 
