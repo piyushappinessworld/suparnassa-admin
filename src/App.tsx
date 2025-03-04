@@ -7,7 +7,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
 import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
 import EditProperty from "./pages/EditProperty";
