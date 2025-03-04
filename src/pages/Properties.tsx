@@ -1,11 +1,21 @@
-
 import { useState, useEffect } from "react";
-import { Search, MapPin, Edit, Trash2, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Search,
+  MapPin,
+  Edit,
+  Trash2,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '@/store';
-import { fetchProperties, deleteProperty } from '@/store/properties/propertySlice';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/store";
+import {
+  fetchProperties,
+  deleteProperty,
+} from "@/store/properties/propertySlice";
 import { toast } from "sonner";
+import ConfirmationModal from "./ConfirmationModal"; // Import the modal
 
 // Define property type for better type safety
 export interface Property {
@@ -20,73 +30,133 @@ export interface Property {
 
 const Properties = () => {
   const [search, setSearch] = useState("");
-  const [currentImageIndexes, setCurrentImageIndexes] = useState<{ [key: number]: number }>({});
+  const [currentImageIndexes, setCurrentImageIndexes] = useState<{
+    [key: string]: number;
+  }>({});
+  const [filterType, setFilterType] = useState<string>("all"); // State for type filter
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // State for modal visibility
+  const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null); // State for property to delete
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
-  
+
   // Get properties from Redux store
-  const { properties, isLoading } = useSelector((state: RootState) => state.properties);
+  const { properties, isLoading } = useSelector(
+    (state: RootState) => state.properties
+  );
 
   useEffect(() => {
     dispatch(fetchProperties());
   }, [dispatch]);
 
-  const handleDelete = async (id: string) => {
+  const handleDeleteClick = (id: string) => {
+    setPropertyToDelete(id); // Set the property to delete
+    setIsDeleteModalOpen(true); // Open the modal
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!propertyToDelete) return;
+
     try {
-      await dispatch(deleteProperty(id)).unwrap();
+      await dispatch(deleteProperty(propertyToDelete)).unwrap();
+      toast.success("Property deleted successfully");
     } catch (error) {
       toast.error("Failed to delete property");
+    } finally {
+      setIsDeleteModalOpen(false); // Close the modal
+      setPropertyToDelete(null); // Reset the property to delete
     }
   };
 
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false); // Close the modal
+    setPropertyToDelete(null); // Reset the property to delete
+  };
+
   const handleEdit = (id: any) => {
-    console.log(id)
+    console.log(id);
     navigate(`/edit-property/${id}`);
   };
 
-  const handlePrevImage = (e: React.MouseEvent, propertyId: number) => {
+  const handlePrevImage = (e: React.MouseEvent, propertyId: string) => {
     e.stopPropagation();
-    const property = properties.find(p => p.id === propertyId);
+    const property = properties.find((p) => p._id === propertyId);
     if (!property) return;
-    
-    setCurrentImageIndexes(prev => ({
+
+    setCurrentImageIndexes((prev) => ({
       ...prev,
-      [propertyId]: ((prev[propertyId] || 0) - 1 + property.images.length) % property.images.length
+      [propertyId]:
+        ((prev[propertyId] || 0) - 1 + property.images.length) %
+        property.images.length,
     }));
   };
 
-  const handleNextImage = (e: React.MouseEvent, propertyId: number) => {
+  const handleNextImage = (e: React.MouseEvent, propertyId: string) => {
     e.stopPropagation();
-    const property = properties.find(p => p.id === propertyId);
+    const property = properties.find((p) => p._id === propertyId);
     if (!property) return;
-    
-    setCurrentImageIndexes(prev => ({
+
+    setCurrentImageIndexes((prev) => ({
       ...prev,
-      [propertyId]: ((prev[propertyId] || 0) + 1) % property.images.length
+      [propertyId]: ((prev[propertyId] || 0) + 1) % property.images.length,
     }));
   };
 
-  const filteredProperties = properties.filter((property) =>
-    property.name.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filter properties based on search and type
+  const filteredProperties = properties.filter((property) => {
+    const matchesSearch = property.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesType = filterType === "all" || property.type === filterType;
+    return matchesSearch && matchesType;
+  });
 
   if (isLoading) {
-    return <div className="flex justify-center items-center h-64">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-64">Loading...</div>
+    );
   }
+
+  // Get unique property types for the filter dropdown
+  const propertyTypes = [
+    ...new Set(properties.map((property) => property.type)),
+  ];
 
   return (
     <div className="animate-fadeIn">
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        title="Delete Property"
+        message="Are you sure you want to delete this property? This action cannot be undone."
+      />
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Properties</h1>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
-            placeholder="Search properties..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-          />
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="Search properties..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            />
+          </div>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="pl-4 pr-8 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          >
+            <option value="all">All Types</option>
+            {propertyTypes.map((type) => (
+              <option key={type} value={type}>
+                {type}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -98,20 +168,20 @@ const Properties = () => {
           >
             <div className="relative aspect-w-16 aspect-h-9 bg-black/60">
               <img
-                src={property.images[currentImageIndexes[property.id] || 0]}
+                src={property.images[currentImageIndexes[property._id] || 0]}
                 alt={property.name}
                 className="object-contain w-full h-[350px]"
               />
               {property.images.length > 1 && (
                 <>
                   <button
-                    onClick={(e) => handlePrevImage(e, property.id)}
+                    onClick={(e) => handlePrevImage(e, property._id)}
                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition-colors z-10"
                   >
                     <ChevronLeft className="h-5 w-5" />
                   </button>
                   <button
-                    onClick={(e) => handleNextImage(e, property.id)}
+                    onClick={(e) => handleNextImage(e, property._id)}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-1 rounded-full hover:bg-black/70 transition-colors z-10"
                   >
                     <ChevronRight className="h-5 w-5" />
@@ -126,7 +196,7 @@ const Properties = () => {
                   <Edit className="h-4 w-4 text-gray-600" />
                 </button>
                 <button
-                  onClick={() => handleDelete(property._id)}
+                  onClick={() => handleDeleteClick(property._id)}
                   className="bg-white p-2 rounded-full hover:bg-gray-100 transition-colors"
                 >
                   <Trash2 className="h-4 w-4 text-red-500" />

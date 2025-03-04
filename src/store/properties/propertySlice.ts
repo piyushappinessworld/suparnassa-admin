@@ -103,7 +103,7 @@ const propertySlice = createSlice({
         toast.success('Property updated successfully');
       })
       .addCase(deleteProperty.fulfilled, (state, action) => {
-        state.properties = state.properties.filter((p) => p.id !== action.payload);
+        state.properties = state.properties.filter((p) => p._id !== action.payload);
         toast.success('Property deleted successfully');
       });
   },
