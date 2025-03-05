@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Properties from "./pages/Properties";
 import AddProperty from "./pages/AddProperty";
 import EditProperty from "./pages/EditProperty";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,16 @@ const App = () => {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <Admin />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/properties"
               element={

@@ -9,6 +9,45 @@ const generateToken = (id) => {
   });
 };
 
+
+
+// Update user credentials (email and password)
+exports.updateCredentials = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password } = req.body; // Only new email and new password are required
+    const userId = req.user.id; // Extracted from JWT token
+
+    // Find the user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update email if provided
+    if (email) {
+      user.email = email;
+    }
+
+    // Update password if provided
+    if (password) {
+      user.password = password; // The pre-save hook will hash the password
+    }
+
+    // Save the updated user
+    await user.save();
+
+    res.status(200).json({ message: "Credentials updated successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Register user
 exports.register = async (req, res) => {
   try {
@@ -96,6 +135,7 @@ exports.createAdmin = async (req, res) => {
       message: "Admin created successfully",
     });
   } catch (err) {
+    console.log(err)
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -1,4 +1,3 @@
-
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'sonner';
 import api from '@/lib/axios';
@@ -45,6 +44,18 @@ export const getProfile = createAsyncThunk(
   }
 );
 
+export const updateCredentials = createAsyncThunk(
+  'auth/updateCredentials',
+  async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+    try {
+      const response = await api.put('/auth/update-credentials', credentials);
+      return response.data;
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data?.message || 'Failed to update credentials');
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -76,6 +87,20 @@ const authSlice = createSlice({
       })
       .addCase(getProfile.fulfilled, (state, action) => {
         state.user = action.payload;
+      })
+      .addCase(updateCredentials.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(updateCredentials.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.user = action.payload.user; // Assuming the response contains the updated user data
+        toast.success('Credentials updated successfully');
+      })
+      .addCase(updateCredentials.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
+        toast.error(action.payload as string);
       });
   },
 });

@@ -14,6 +14,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const navItems = [
     { path: "/properties", icon: Building, label: "Properties" },
     { path: "/add-property", icon: PlusCircle, label: "Add Property" },
+    { path: "/admin", icon: LayoutDashboard, label: "Admin" },
   ];
 
   return (
