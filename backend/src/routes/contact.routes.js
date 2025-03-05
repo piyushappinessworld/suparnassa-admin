@@ -23,8 +23,8 @@ const sendEmail = async (formData) => {
     .join("");
 
   const msg = {
-    to: "your-email@example.com", // Change to your email
-    from: "your-email@example.com", // Change to your verified sender email in SendGrid
+    to: "agrawaljoy1@gmail.com", // Change to your email
+    from: "piyush.a@appinessworld.com", // Change to your verified sender email in SendGrid
     subject: formData.subject || "New Enquiry from Contact Form",
     text: textContent,
     html: htmlContent,
