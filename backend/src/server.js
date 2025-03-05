@@ -26,6 +26,21 @@ app.post("/api/send-email", async (req, res) => {
   }
 });
 
+// New endpoint for the second form
+app.post("/send-inquiry", async (req, res) => {
+  const formData = req.body;
+  const result = await sendEmail({
+    ...formData,
+    subject: "New Inquiry About Seaside Serenity Villa",
+  });
+
+  if (result.success) {
+    res.status(200).send(result.message);
+  } else {
+    res.status(500).send(result.message);
+  }
+});
+
 // Error handling
 app.use(errorHandler);
 

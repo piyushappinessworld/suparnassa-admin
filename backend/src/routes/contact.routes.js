@@ -1,33 +1,33 @@
-// sendEmail.js
 const sgMail = require("@sendgrid/mail");
 
 const sendEmail = async (formData) => {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+  // Construct email content dynamically based on the form data
+  const textContent = Object.entries(formData)
+    .map(([key, value]) => {
+      if (key === "subject") return; // Skip the subject field
+      return `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`;
+    })
+    .filter(Boolean) // Remove undefined values
+    .join("\n");
+
+  const htmlContent = Object.entries(formData)
+    .map(([key, value]) => {
+      if (key === "subject") return; // Skip the subject field
+      return `<p><strong>${
+        key.charAt(0).toUpperCase() + key.slice(1)
+      }:</strong> ${value}</p>`;
+    })
+    .filter(Boolean) // Remove undefined values
+    .join("");
+
   const msg = {
-    to: "agrawaljoy1@gmail.com",
-    from: "piyush.a@appinessworld.com",
-    subject: "New Enquiry from Contact Form",
-    text: `
-      First Name: ${formData.firstName}
-      Last Name: ${formData.lastName}
-      Email: ${formData.email}
-      Phone: ${formData.phone}
-      Inquiry Type: ${formData.inquiryType}
-      Source: ${formData.source}
-      Message: ${formData.message}
-      Agreed to Terms: ${formData.terms ? "Yes" : "No"}
-    `,
-    html: `
-      <p><strong>First Name:</strong> ${formData.firstName}</p>
-      <p><strong>Last Name:</strong> ${formData.lastName}</p>
-      <p><strong>Email:</strong> ${formData.email}</p>
-      <p><strong>Phone:</strong> ${formData.phone}</p>
-      <p><strong>Inquiry Type:</strong> ${formData.inquiryType}</p>
-      <p><strong>Source:</strong> ${formData.source}</p>
-      <p><strong>Message:</strong> ${formData.message}</p>
-      <p><strong>Agreed to Terms:</strong> ${formData.terms ? "Yes" : "No"}</p>
-    `,
+    to: "your-email@example.com", // Change to your email
+    from: "your-email@example.com", // Change to your verified sender email in SendGrid
+    subject: formData.subject || "New Enquiry from Contact Form",
+    text: textContent,
+    html: htmlContent,
   };
 
   try {
