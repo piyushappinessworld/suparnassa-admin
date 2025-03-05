@@ -31,7 +31,7 @@ app.post("/send-inquiry", async (req, res) => {
   const formData = req.body;
   const result = await sendEmail({
     ...formData,
-    subject: "New Inquiry About Seaside Serenity Villa",
+    subject: `New Inquiry About ${formData.subject}`,
   });
 
   if (result.success) {
