@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth.routes");
 const propertyRoutes = require("./routes/property.routes");
 const { errorHandler } = require("./middleware/error.middleware");
+const sendEmail = require("./routes/contact.routes");
 
 const app = express();
 
