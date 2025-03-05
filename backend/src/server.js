@@ -27,7 +27,7 @@ app.post("/api/send-email", async (req, res) => {
 });
 
 // New endpoint for the second form
-app.post("/send-inquiry", async (req, res) => {
+app.post("/api/send-inquiry", async (req, res) => {
   const formData = req.body;
   const result = await sendEmail({
     ...formData,
