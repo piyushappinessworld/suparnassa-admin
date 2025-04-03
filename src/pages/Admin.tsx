@@ -10,8 +10,10 @@ const Admin = () => {
     (state: RootState) => state.auth
   ); // Use RootState for useSelector
 
+  console.log(user);
+  
   const [formData, setFormData] = useState({
-    email: user?.email || "",
+    email: user?.email || "admin@suparnassa.com",
     password: "",
     confirmPassword: "",
   });
